@@ -22,14 +22,13 @@ Try the demo here!
 - `app.py`: The main application script for the Streamlit app.
 - `Dockerfile`: Contains the Docker configuration for building and running the app.
 - `requirements.txt`: Lists the Python packages required for this project.
-- `storage/`: Directory contains the database file and related resources.
 - `.env`: File to include `OPENAI_API_KEY` for authentication.
 
 ## Setup and Usage
 
 ### Clone the Repository
 ```
-git clone https://github.com/YourGitHubUsername/your-repository-name
+git clone https://github.com/Cohorte-ai/text_to_sql_demo/
 ```
 
 ### Install Required Packages
