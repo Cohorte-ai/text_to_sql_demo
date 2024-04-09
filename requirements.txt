@@ -1,0 +1,6 @@
+streamlit-pills==0.3.0
+streamlit==1.32.2
+SQLAlchemy==2.0.29
+openai==1.16.1
+llama-index==0.10.26
+google-generativeai==0.4.1
