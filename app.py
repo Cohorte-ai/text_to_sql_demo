@@ -87,7 +87,7 @@ class StreamlitChatPack(BaseLlamaPack):
             f"{self.page}💬"
         )
         st.info(
-            f"Explore Snowflake views with this AI-powered app. Pose any question and receive exact SQL queries.",
+            f"Explore database views with this AI-powered app. Pose any question and receive exact SQL queries.",
             icon="ℹ️",
         )
         # Define the pills with emojis
