@@ -99,9 +99,7 @@ class StreamlitChatPack(BaseLlamaPack):
 
         def add_to_message_history(role, content):
             message = {"role": role, "content": str(content)}
-            st.session_state["messages"].append(
-                message
-            )  # Add response to message history
+            st.session_state["messages"].append(message)  # Add response to message history
 
         def get_table_data(table_name, conn):
             query = f"SELECT * FROM {table_name}"
@@ -162,35 +160,43 @@ class StreamlitChatPack(BaseLlamaPack):
                 service_context=service_context
             )
 
-        # Display the prior chat messages
-        for message in st.session_state["messages"]:
+        for message in st.session_state["messages"]:  # Display the prior chat messages
             with st.chat_message(message["role"]):
                 st.write(message["content"])
 
-        # Always show the chat input
-        prompt = st.chat_input(
-            "Enter your natural language query about the database")
-
-        # If a pill is selected, override the chat input with the pill's value
-        if selected_query and selected_query != "None":
-            prompt = selected_query
-
-        # Handle the prompt logic
-        if prompt:
-            with st.chat_message("user"):
-                st.write(prompt)
-            add_to_message_history("user", prompt)
-
-        # If last message is not from assistant, generate a new response
-        if st.session_state["messages"][-1]["role"] != "assistant":
+        # To avoid duplicated display of answered pill questions each rerun
+        if selected_query and selected_query != "None" and selected_query not in st.session_state.get(
+            "displayed_pill_questions", set()
+        ):
             with st.spinner():
+                st.session_state.setdefault("displayed_pill_questions", set()).add(selected_query)
+                with st.chat_message("user"):
+                    st.write(selected_query)
+                with st.chat_message("assistant"):
+                    response = st.session_state["query_engine"].query(
+                        "User Question:"+selected_query+". ")
+                    sql_query = f"```sql\n{response.metadata['sql_query']}\n```\n**Response:**\n{response.response}\n"
+                    response_container = st.empty()
+                    response_container.write(sql_query)
+                    add_to_message_history("user", selected_query)
+                    add_to_message_history("assistant", sql_query)
+
+        # Prompt for user input and save to chat history
+        prompt = st.chat_input("Enter your natural language query about the database") 
+        if prompt:
+            with st.spinner():
+                add_to_message_history("user", prompt)
+
+                # Display the new question immediately after it is entered
+                with st.chat_message("user"):
+                    st.write(prompt)
+
                 with st.chat_message("assistant"):
                     response = st.session_state["query_engine"].query(
                         "User Question:"+prompt+". ")
                     sql_query = f"```sql\n{response.metadata['sql_query']}\n```\n**Response:**\n{response.response}\n"
                     response_container = st.empty()
                     response_container.write(sql_query)
-                    # st.write(response.response)
                     add_to_message_history("assistant", sql_query)
 
 
